@@ -88,7 +88,7 @@ func sendDataToOtherServer(data []byte) {
 		return
 	}
 
-	url := "http://localhost:8080/add"
+	url := "https://jsonserver-production-799f.up.railway.app:7574/data"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(transformedJSON))
 	if err != nil {
 		fmt.Println("Error creating request:", err)
