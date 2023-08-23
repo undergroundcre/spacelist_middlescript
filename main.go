@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,7 @@ func main() {
 	r.POST("/data", handleData)
 	r.GET("/get", handleGet)
 
-	port := ":3000"
+	port := ":" +os.Getenv("PORT")
 	if err := r.Run(port); err != nil {
 		panic(fmt.Sprintf("Failed to start server on port %s: %v", port, err))
 	}
