@@ -80,6 +80,7 @@ func sendDataToOtherServer(data []byte) {
 		"Longitude":  "",
 		"Transaction": transaction,
 		"LeaseRate":   keyBoldMap["Base Rent"],
+		"State":      "AB",
 	}
 
 	transformedJSON, err := json.Marshal(transformedData)
