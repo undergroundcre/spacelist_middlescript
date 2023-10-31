@@ -25,7 +25,7 @@ func main() {
 	r.POST("/data", handleData)
 	r.GET("/get", handleGet)
 
-	port := ":" +os.Getenv("PORT")
+	port := ":" + os.Getenv("PORT")
 	if err := r.Run(port); err != nil {
 		panic(fmt.Sprintf("Failed to start server on port %s: %v", port, err))
 	}
@@ -38,11 +38,11 @@ func handleData(c *gin.Context) {
 		return
 	}
 
-	listing := StoredListing{
-		Data: body,
-	}
-	listings = append(listings, listing)
-	currentID++
+	// listing := StoredListing{
+	// 	Data: body,
+	// }
+	// listings = append(listings, listing)
+	// currentID++
 
 	// Transform and send the data to the other server
 	go sendDataToOtherServer(body)
@@ -68,19 +68,18 @@ func sendDataToOtherServer(data []byte) {
 		}
 	}
 
-
 	transformedData := map[string]interface{}{
-		"URL":        jsonData["URL"],
-		"Location":   jsonData["Name"],
-		"Photo":      jsonData["Photo"],
-		"Asset":      keyBoldMap["Property Type"],
-		"Size":       keyBoldMap["Building Size"],
-		"Price":      keyBoldMap["Asking Price"],
-		"Latitude":   "",
-		"Longitude":  "",
+		"URL":         jsonData["URL"],
+		"Location":    jsonData["Name"],
+		"Photo":       jsonData["Photo"],
+		"Asset":       keyBoldMap["Property Type"],
+		"Size":        keyBoldMap["Building Size"],
+		"Price":       keyBoldMap["Asking Price"],
+		"Latitude":    "",
+		"Longitude":   "",
 		"Transaction": transaction,
 		"LeaseRate":   keyBoldMap["Base Rent"],
-		"State":      "AB",
+		"State":       "AB",
 	}
 
 	transformedJSON, err := json.Marshal(transformedData)
@@ -108,25 +107,25 @@ func sendDataToOtherServer(data []byte) {
 }
 
 func handleGet(c *gin.Context) {
-    flattenedListings := make([]map[string]interface{}, 0)
+	flattenedListings := make([]map[string]interface{}, 0)
 
-    for _, listing := range listings {
-        var data map[string]interface{}
-        if err := json.Unmarshal(listing.Data, &data); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Error unmarshaling data"})
-            return
-        }
+	for _, listing := range listings {
+		var data map[string]interface{}
+		if err := json.Unmarshal(listing.Data, &data); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error unmarshaling data"})
+			return
+		}
 
-        flattenedData := make(map[string]interface{})
-        flattenedData["URL"] = data["URL"]
-        flattenedData["Name"] = data["Name"]
-        flattenedData["Photo"] = data["Photo"]
-        for key, value := range data["KeyBoldMap"].(map[string]interface{}) {
-            flattenedData[key] = value	
-        }
+		flattenedData := make(map[string]interface{})
+		flattenedData["URL"] = data["URL"]
+		flattenedData["Name"] = data["Name"]
+		flattenedData["Photo"] = data["Photo"]
+		for key, value := range data["KeyBoldMap"].(map[string]interface{}) {
+			flattenedData[key] = value
+		}
 
-        flattenedListings = append(flattenedListings, flattenedData)
-    }
+		flattenedListings = append(flattenedListings, flattenedData)
+	}
 
-    c.IndentedJSON(http.StatusOK, flattenedListings)
+	c.IndentedJSON(http.StatusOK, flattenedListings)
 }
